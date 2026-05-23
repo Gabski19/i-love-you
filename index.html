@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Heart Glow</title>
+
+<style>
+body {
+  margin: 0;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: Arial;
+  background: linear-gradient(-45deg, #000000, #120018, #000000, #1a001f);
+  background-size: 400% 400%;
+  animation: bg 10s ease infinite;
+}
+
+@keyframes bg {
+  0% {background-position: 0% 50%;}
+  50% {background-position: 100% 50%;}
+  100% {background-position: 0% 50%;}
+}
+
+#unlockBtn {
+  padding: 16px 32px;
+  font-size: 18px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  background: white;
+  font-weight: bold;
+  z-index: 10;
+}
+
+#container {
+  display: none;
+  position: relative;
+  width: 400px;
+  height: 450px;
+}
+
+/* CENTER TEXT (no positioning here anymore) */
+#centerText {
+  position: absolute;
+  color: #ff0000;
+  font-size: 28px;
+  font-weight: bold;
+  letter-spacing: 3px;
+  text-shadow: 0 0 10px #ff2d55, 0 0 20px #ff2d55;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  color: #ff2d55;
+  font-size: 14px;
+  text-shadow: 0 0 8px #ff2d55, 0 0 16px #ff2d55;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 1;
+}
+</style>
+</head>
+
+<body>
+
+<button id="unlockBtn">UNLOCK</button>
+
+<div id="container">
+  <div id="centerText">I LOVE YOU</div>
+</div>
+
+<script>
+const container = document.getElementById("container");
+const btn = document.getElementById("unlockBtn");
+
+// heart function
+function heart(t) {
+  return {
+    x: 16 * Math.pow(Math.sin(t), 3),
+    y: -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t))
+  };
+}
+
+let particles = [];
+const count = 90;
+
+function createParticles() {
+  for (let i = 0; i < count; i++) {
+    const div = document.createElement("div");
+    div.className = "particle";
+    div.innerText = "i love you";
+    container.appendChild(div);
+
+    particles.push({
+      el: div,
+      offset: i * (Math.PI * 2 / count)
+    });
+  }
+}
+
+function animate() {
+  const time = Date.now() * 0.0002;
+
+  const cx = container.offsetWidth / 2;
+  const cy = container.offsetHeight / 2 - 60;
+  const scale = 16;
+
+  // ✅ PERFECT CENTER SYNC
+  const text = document.getElementById("centerText");
+  text.style.left = cx + "px";
+  text.style.top = cy + "px";
+  text.style.transform = "translate(-50%, -50%)";
+
+  particles.forEach(p => {
+    const t = time + p.offset;
+    const pos = heart(t);
+
+    p.el.style.left = cx + pos.x * scale - 10 + "px";
+    p.el.style.top  = cy + pos.y * scale - 10 + "px";
+  });
+
+  requestAnimationFrame(animate);
+}
+
+btn.onclick = () => {
+  btn.style.display = "none";
+  container.style.display = "block";
+
+  createParticles();
+  animate();
+};
+</script>
+
+</body>
+</html>
